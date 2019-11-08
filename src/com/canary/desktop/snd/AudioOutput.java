@@ -1,4 +1,4 @@
-package audio;
+package com.canary.desktop.snd;
 
 import jass.engine.SinkIsFullException;
 import jass.engine.Source;

@@ -1,4 +1,4 @@
-package audio;
+package com.canary.desktop.snd;
 
 import jass.engine.Out;
 import jass.engine.Source;
@@ -24,7 +24,6 @@ public abstract class AudioUnit {
 	public abstract boolean isInput();
 	public abstract boolean isOutput();
 	
-	public abstract AudioUnit copy();
 	public abstract boolean setSource(AudioUnit unit);
 	public abstract Source toSource();
 	
@@ -34,9 +33,6 @@ public abstract class AudioUnit {
 		}
 		public boolean isOutput() {
 			return false;
-		}
-		public AudioUnit copy() {
-			return null;
 		}
 		public boolean setSource(AudioUnit unit) {
 			return false;

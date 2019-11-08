@@ -1,4 +1,4 @@
-package audio;
+package com.canary.desktop.snd;
 
 import jass.engine.SinkIsFullException;
 import jass.render.SourcePlayer;
@@ -18,10 +18,6 @@ public class Speaker extends AudioOutput {
   	
 		title = "Spkr";
 		keys = new char[] {'\0'};
-	}
-	
-	public AudioUnit copy() {
-		return new Speaker();
 	}
 	
 	protected void setupPlayer() {

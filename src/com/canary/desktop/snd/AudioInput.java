@@ -1,4 +1,4 @@
-package audio;
+package com.canary.desktop.snd;
 
 import jass.engine.Out;
 import jass.engine.Source;

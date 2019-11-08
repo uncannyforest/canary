@@ -1,4 +1,4 @@
-package desktop;
+package com.canary.desktop.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -13,21 +13,22 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
-import audio.AudioUnit;
-import audio.Speaker;
-import audio.Synth;
+import com.canary.desktop.prc.ImageImpl;
+import com.canary.desktop.snd.AudioUnit;
+import com.canary.desktop.snd.Speaker;
+import com.canary.desktop.snd.SynthInput;
+import com.canary.synth.Synthesizer;
 
-class SynthFrame extends JFrame {
-	public static final int WINDOW_WIDTH = 500;
+public class SynthFrame extends JFrame {
+	public static final int WINDOW_WIDTH = 600;
 	public static final int WINDOW_HEIGHT = 400;
 	
 	private int width = 64;
 	private int height = 16;
 	private final int zoomExp = 4; // 2^4 = 16
 	
+	private File file;
 	private BufferedImage song = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	private int color = 0xFF7F7F7F;
 	
@@ -38,7 +39,8 @@ class SynthFrame extends JFrame {
 	private Graphics2D gfx = (Graphics2D)(image.getGraphics());
 	
 	private Speaker spkr = new Speaker();
-	private Synth synth = new Synth();
+	private Synthesizer synth;
+	private SynthInput input;
 	
 	public SynthFrame() {
 		this.setTitle("Synth Editor");
@@ -146,30 +148,39 @@ class SynthFrame extends JFrame {
 	}
 
 	public void play() {
-		synth.setScore(song);
-		spkr.setSource(synth);
+		spkr.setSource(input);
 	}
 	
 	public void stop() {
 		spkr.setSource(AudioUnit.NULL_UNIT);
-		synth.setScore(null);
 	}
 	
 	public void open() {
-		try {
-			File file = getOpenFile();
-			if (file!=null) {
+		file = getOpenFile();
+		load();
+	}
+	
+	public void load() {
+		if (file!=null) {
+			try {
 				song = ImageIO.read(file);
 				displaySong();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(this,
+						"Error saving file",
+						"oops!",
+						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this,
-					"Error saving file",
-					"oops!",
-					JOptionPane.ERROR_MESSAGE);
 		}
+		process();
 	}
 
+	public void process() {
+		synth = new Synthesizer(new ImageImpl(song));
+		input = new SynthInput(synth);
+	}
+	
 	public void save() {
 		try {
 			javax.imageio.ImageIO.write(song, "png", getSaveFile());
@@ -221,7 +232,7 @@ class OptionsPanel extends JPanel {
 	private final SynthFrame frame;
 		
 //	private final JButton zoomIn, zoomOut;
-	private final JButton play;
+	private final JButton play, reload, update;
 	private final JLabel lVolume, lPitch, lTimbre;
 	private final JSpinner tVolume, tPitch, tTimbre;
 	
@@ -238,7 +249,7 @@ class OptionsPanel extends JPanel {
 		setLayout(layout);
 		layout.setAlignment(FlowLayout.LEFT);
 		
-		///// PLAY
+		///// BUTTONS
 		play = new JButton("Play");
 		add(play);
 		play.addActionListener(new ActionListener() {
@@ -252,6 +263,22 @@ class OptionsPanel extends JPanel {
 					play.setText("Play");
 					playing = false;
 				}
+			}
+		});
+		
+		reload = new JButton("Reload");
+		add(reload);
+		reload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				frame.load();
+			}
+		});
+		
+		update = new JButton("Update Audio");
+		add(update);
+		update.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				frame.process();
 			}
 		});
 		
