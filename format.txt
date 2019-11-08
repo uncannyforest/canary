@@ -1,0 +1,55 @@
+======================== FORMAT VERSION 1.3 ========================
+
+============
+FIRST COLUMN
+============
+The first column has two non-black pixels.  (Below, V refers to vertical position.)
+
+The topmost non-black pixel
+V last row of percussion
+R format version number, two 4-bit components (i.e. version 1.3 is 0x13)
+G this plus 240 is the tempo, beats per minute
+B pixels per beat
+
+The second non-black pixel
+V base note (major scale)
+R volume (0-255)
+G transpose from A440 (in 5 cents)
+
+=====
+NOTES
+=====
+
+The green channel specifies a number of things.
+
+??------
+The first two bits specify sharps and flats.
+00 double flat
+01 flat
+10 natural
+11 sharp
+
+--?-----
+The third bit is unused.
+
+---?????
+The last five bits specify chirps and envelope.  If the first of these bits is 0, it specifies envelope; if 1, it specifies chirps.
+
+---0???? envelopes
+0000 none
+0111 fade in quickly in proportion to frequency (to eliminate clicks)
+1000 fade in and out quickly in proportion to frequency (to eliminate clicks)
+1111 fade out quickly in proportion to frequency (to eliminate clicks)
+0001-0110 decrease by 2^this power
+1001-1110 increase by 2^(1111-this power)
+
+---10??? start chirp
+000 entire pixel
+001-011 reach end by (1/2)^x of pixel
+100-111 don't start until (1/2)^1000-x from end
+
+---11??- end chirp
+first bit ? reverse : don't reverse
+second bit ? FILO : FIFO
+- final bit unused
+
