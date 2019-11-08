@@ -1,0 +1,38 @@
+TO START
+--------
+
+After compiling, in the termproject directory,type the following in the command prompt:
+
+java gui/Canary
+
+
+
+SYNTH EDITOR
+------------
+
+When the program is open, select "File > Synth Editor" to open the synth editor.
+
+LAYOUT
+A blank canvas is the opened.  Clicking squares adds notes.  The number boxes can be used to change the notes' properties.  The Play button loops the current song until Stop is pressed.
+
+STRUCTURE OF SONG IMAGE
+On the far left row of pixels, on pixel must be made non-black; this is the base note of the major scale to be used.  This note is A1760.  This first note is not played; all notes with non-zero volume, which are not in the farthest left row, are played.
+
+The color represents the properties indicated by the three numbers.  A volume of 0 means the note is not played.  A timbre of 0 produces a sine wave; a timbre of 255 produces approximately a square wave.  Any note with a pitch of 127 is part of the major scale.  In this program, a semitone is 85 units, so to make a note sharp, use a pitch of 202, and to make it flat, use a pitch of 42.
+
+LOADING/SAVING IMAGES
+The program uses PNG images.  Thus the images produced can be opened in Paint, and Paint can be used to create images (of any dimension) for use in this program.  An example song example.png is included, which was created using both this program and Paint.  Images can be saved and loaded through the File menu,
+
+
+AUDIO PROCESSOR
+---------------
+
+To move a box to the grid, click the box and then click on the grid.  This two-click method can also be used to move boxes around on the grid.  Clicking a grid box and then the top panel removes the box.
+
+A row in the window represents a chain of processing units.  On the far left there must be an input, and on the right end of a row there must be an output, with everything in the middle, modifiers.  The audio will be run through the modifiers from left to right.  The audio in a row will not play if these rules are violated.
+
+For example, the sound from the microphone can be sent to the speaker by moving the Mike unit to the left row, and placing the Speaker unit immediately to its right.
+
+Only the microphone and speaker have been fully implemented; synth is implemented, except for the mechanism for selecting which song to use, so songs are only playable through the Synth Editor.
+
+Note: the name of the microphone port is written into the code, so it may be that it does not work on all computers.
