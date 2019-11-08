@@ -1,4 +1,4 @@
-package gui;
+package desktop;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
