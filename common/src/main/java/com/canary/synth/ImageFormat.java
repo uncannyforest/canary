@@ -12,6 +12,7 @@ import com.canary.synth.tone.PartialChirp;
 import com.canary.synth.tone.Tone;
 import com.canary.synth.tone.mod.NoiseEnvelope;
 import com.canary.synth.tone.mod.NoteEnvelope;
+import com.canary.synth.tone.mod.Timbre;
 
 public class ImageFormat {
 
@@ -99,7 +100,7 @@ public class ImageFormat {
                             chord.add(new Note(note + baseNote + transpose,
                                 (pixel & 0x00FF0000) >>> 16,
                                 (pixel & 0x0000C000) >>> 14,
-                                pixel & 0x000000FF,
+                                new Timbre.V10(pixel & 0x000000FF),
                                 new NoteEnvelope((pixel & 0x00000F00) >>> 8)));
                         } else { // chirp
                             int chirpCode = (pixel & 0x00000F00) >>> 8;
@@ -123,13 +124,13 @@ public class ImageFormat {
                                             (pixel & 0x00FF0000) >>> 16,
                                             (pixel & 0x0000C000) >>> 14,
                                             (x - 1) / pixelsPerSecond,
-                                            pixel & 0x000000FF);
+                                            new Timbre.V10(pixel & 0x000000FF));
                                 } else {
                                     chirp = new PartialChirp(actualNote,
                                             (pixel & 0x00FF0000) >>> 16,
                                             (pixel & 0x0000C000) >>> 14,
                                             (x - 1) / pixelsPerSecond,
-                                            pixel & 0x000000FF,
+                                            new Timbre.V10(pixel & 0x000000FF),
                                             chirpCode & 0x7);
                                 }
                                 runningChirps.add(chirp);

@@ -1,8 +1,6 @@
 package com.canary.synth.tone;
 
-/**
- * Created on 2/8/2017.
- */
+import com.canary.synth.tone.mod.Timbre;
 
 public class PartialChirp extends Chirp {
 
@@ -10,7 +8,7 @@ public class PartialChirp extends Chirp {
     double chirpFraction;
     Note noteComponent; // for the part that's not a chirp
 
-    public PartialChirp(double note, int volume, int pitchCorrection, double initialTime, int timbre, int timeCode) {
+    public PartialChirp(double note, int volume, int pitchCorrection, double initialTime, Timbre timbre, int timeCode) {
         super(note, volume, pitchCorrection, initialTime, timbre);
 
         this.atEnd = (timeCode & 0x4) == 0x4;
@@ -32,9 +30,9 @@ public class PartialChirp extends Chirp {
         // remember, initialPitch is simply the note the algorithm reached first
         // it's not the beginning pitch if reverse==true
         if (atEnd ^ reverse) {
-            noteComponent = new Note(initialPitch, volumeFactor, timbreFactor);
+            noteComponent = new Note(initialPitch, volumeFactor, timbre);
         } else {
-            noteComponent = new Note(finalPitch, volumeFactor, timbreFactor);
+            noteComponent = new Note(finalPitch, volumeFactor, timbre);
         }
 
     }

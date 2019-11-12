@@ -23,7 +23,7 @@ public class PartialChirpTest {
                 tone instanceof PartialChirp);
         PartialChirp partialChirp = (PartialChirp) tone;
 
-        assertEquals(partialChirp.timbreFactor, partialChirp.noteComponent.timbreFactor, 0.001);
+        assertEquals(partialChirp.timbre, partialChirp.noteComponent.timbre);
     }
 
     @Test

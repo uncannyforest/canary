@@ -1,9 +1,10 @@
 package com.canary.synth.tone;
 
-import com.canary.synth.AlgUtils;
+import com.canary.synth.tone.mod.Timbre;
+
 
 public class Chirp extends Tone {
-    public double timbreFactor;
+    public final Timbre timbre;
 
     public double initialPitch;
     public double initialTime;
@@ -20,17 +21,13 @@ public class Chirp extends Tone {
      * pitchCorrection, [0,3] in semitones where 2 = natural
      * timbre, [0,255]
      */
-    public Chirp(double note, int volume, int pitchCorrection, double initialTime, int timbre) {
+    public Chirp(double note, int volume, int pitchCorrection, double initialTime, Timbre timbre) {
         super(volume);
 
         initialPitch = note + pitchCorrection - 2;
         this.initialTime = initialTime;
 
-        // higher timbre value makes more like square wave
-        // 0 is sine wave
-        // I really would like to come up with a better algorithm for intermediate values,
-        //        but this will have to do for now
-        timbreFactor = 256.0 / (256 - timbre);
+        this.timbre = timbre;
     }
 
     public void finalize(double note, int pitchCorrection, double finalTime, boolean reverse) {
@@ -44,11 +41,11 @@ public class Chirp extends Tone {
     public double getValue(double time, double fraction) {
         double pitch = chirpRate * time + yOffset;
         double frequency = Math.pow(2, pitch/12)*440;
-        double sineInput = frequency * 12/Math.log(2) / chirpRate;
+        double locationInPhase = frequency * 12/Math.log(2) / chirpRate;
         // the antiderivative of the frequency wrt time
         // If chirpRate == 0, this isn't the antiderivative (it's frequency * time).
         // But then you should use a Note instead.
 
-        return this.volumeFactor * AlgUtils.enforceBounds(this.timbreFactor * Math.sin(AlgUtils.TAU * sineInput));
+        return this.volumeFactor * timbre.getWaveformValue(locationInPhase);
     }
 }
