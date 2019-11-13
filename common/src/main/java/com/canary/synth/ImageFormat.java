@@ -29,7 +29,8 @@ public class ImageFormat {
 
 	public static Score load(Image image) {
 		Deque<Chirp> runningChirps;
-		
+
+		// Why not 0?
 		int baseNote = 12;
 		
 		ArrayList<ArrayList<Tone>> scoreContents = new ArrayList<ArrayList<Tone>>(image.getWidth()-1);
