@@ -1,0 +1,174 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorBackground"
+    tools:context="com.canary.android.gui.PlayActivity"
+    android:id="@+id/main">
+
+
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+
+
+    <com.canary.android.gui.HorizontalScrollViewOptionalFling
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:id="@+id/fullscreen_content"
+        android:focusableInTouchMode="true">
+
+        <ImageView
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/canary"
+            android:id="@+id/image_view"
+            android:layout_width="wrap_content"
+            android:adjustViewBounds="true"
+            android:antialias="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:contentDescription="">
+
+        </ImageView>
+
+        <!--
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true"
+            android:textColor="#e6dc73"
+            android:textStyle="bold"
+            android:textSize="50sp"
+            android:gravity="center"
+            android:text="@string/dummy_content" />
+        -->
+    </com.canary.android.gui.HorizontalScrollViewOptionalFling>
+
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:id="@+id/cursor"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/cursor"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        android:progress="0"
+        tools:visibility="invisible" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pane"
+        android:layout_gravity="center_horizontal"
+        android:background="#00000000"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:id="@+id/fullscreen_controls"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls_menu"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent"
+            android:elevation="8dp"
+            android:focusableInTouchMode="true">
+
+            <Button
+                android:id="@+id/button_load"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_load"
+                android:onClick="buttonLoad"
+                android:elevation="6dp" />
+            <Button
+                android:id="@+id/button_export"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_export"
+                android:onClick="buttonExport"
+                android:elevation="6dp" />
+            <Button
+                android:id="@+id/button_help"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_help"
+                android:onClick="buttonHelp"
+                android:elevation="6dp" />
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent"
+            android:elevation="2dp">
+
+            <Button android:id="@+id/button_menu"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_menu"
+                android:onClick="buttonMenu" />
+
+            <Button android:id="@+id/button_reload"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_reload"
+                android:onClick="buttonReload" />
+
+            <Button android:id="@+id/button_beginning"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_beginning"
+                android:onClick="buttonBeginning" />
+
+            <Button android:id="@+id/button_play"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_play"
+                android:onClick="buttonPlay" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

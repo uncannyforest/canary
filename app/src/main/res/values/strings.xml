@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Clockwork Canary</string>
+    <string name="app_name_short">Canary</string>
+
+    <string name="button_load">Load</string>
+    <string name="button_export">Export</string>
+    <string name="button_help">Help</string>
+    <string name="button_reload">Reload</string>
+    <string name="button_beginning">To Start</string>
+    <string name="button_play">Play</string>
+    <string name="dummy_content">CANARY</string>
+    <string name="button_menu">. . .</string>
+</resources>

@@ -1,4 +1,14 @@
-bin/
+# added manually
+/common/src/main/java/uk
+/desktop/src/main/java/jass
 
-src/jass/
-src/uk/
+# added by Android Studio
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
