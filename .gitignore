@@ -1,6 +1,7 @@
 # added manually
 /common/src/main/java/uk
 /desktop/src/main/java/jass
+/.idea/caches
 
 # added by Android Studio
 *.iml
