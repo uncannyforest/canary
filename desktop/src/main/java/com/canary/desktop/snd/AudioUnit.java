@@ -9,36 +9,36 @@ public abstract class AudioUnit {
   public static final float SRATE = 44100;
   
   public static final AudioUnit NULL_UNIT = new NullUnit();
-	
-	String title;
-	char[] keys;
-	
-	public String getTitle() {
-		return title;
-	}
-	
-	public char[] getKeys(){
-		return keys;
-	}
-	
-	public abstract boolean isInput();
-	public abstract boolean isOutput();
-	
-	public abstract boolean setSource(AudioUnit unit);
-	public abstract Source toSource();
-	
-	protected static class NullUnit extends AudioUnit {
-		public boolean isInput() {
-			return false;
-		}
-		public boolean isOutput() {
-			return false;
-		}
-		public boolean setSource(AudioUnit unit) {
-			return false;
-		}
-		public Source toSource() {
-			return null;
-		}
-	}
+
+    String title;
+    char[] keys;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public char[] getKeys(){
+        return keys;
+    }
+
+    public abstract boolean isInput();
+    public abstract boolean isOutput();
+
+    public abstract boolean setSource(AudioUnit unit);
+    public abstract Source toSource();
+
+    protected static class NullUnit extends AudioUnit {
+        public boolean isInput() {
+            return false;
+        }
+        public boolean isOutput() {
+            return false;
+        }
+        public boolean setSource(AudioUnit unit) {
+            return false;
+        }
+        public Source toSource() {
+            return null;
+        }
+    }
 }
