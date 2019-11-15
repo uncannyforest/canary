@@ -18,17 +18,7 @@ public class ImageFormat {
 
     public static final int[] MAJOR_SCALE = {0, 2, 4, 5, 7, 9, 11};
 
-    private static int posMod(int dividend, int divisor) {
-        int mod = dividend % divisor;
-        return mod + (mod<0?divisor:0);
-    }
-
-    private static int posDiv(int dividend, int divisor) {
-        int mod = dividend % divisor;
-        return (dividend/divisor) - (mod<0?1:0);
-    }
-
-    public static Score load(Image image) {
+	public static Score load(Image image) {
         Deque<Chirp> runningChirps;
 
         // Why not 0?
@@ -91,8 +81,8 @@ public class ImageFormat {
                     } else {
                         // convert from staff notation to note pitch in semitones
                         int rawNote = baseNotePixel - y;
-                        int noteInScale = posMod(rawNote, 7);
-                        int octave = posDiv(rawNote, 7);
+                        int noteInScale = AlgUtils.posMod(rawNote, 7);
+                        int octave = AlgUtils.posDiv(rawNote, 7);
                         int note = MAJOR_SCALE[noteInScale] + octave * 12;
                         double actualNote = note + baseNote + transpose;
 

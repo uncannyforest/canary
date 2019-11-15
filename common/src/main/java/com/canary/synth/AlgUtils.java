@@ -11,4 +11,20 @@ public class AlgUtils {
         if (input < -1) return -1;
         else return input;
     }
+
+    /**
+     * Mod with result always in [0, divisor)
+     */
+    public static int posMod(int dividend, int divisor) {
+        int mod = dividend % divisor;
+        return mod + (mod<0?divisor:0);
+    }
+
+    /**
+     * Div with result always rounded in negative direction
+     */
+    public static int posDiv(int dividend, int divisor) {
+        int mod = dividend % divisor;
+        return (dividend/divisor) - (mod<0?1:0);
+    }
 }
