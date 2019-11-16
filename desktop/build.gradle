@@ -5,5 +5,5 @@ dependencies {
     implementation project(path: ':common')
 }
 
-sourceCompatibility = "7"
-targetCompatibility = "7"
+sourceCompatibility = "8"
+targetCompatibility = "8"

@@ -34,15 +34,17 @@ public class ImageFormat {
         int percussionPixel = 0;
         double volume = 255;
         double pixelsPerSecond = 8;
-        int version = 0x13;
+        int version = 0x14; // (latest version) - must be initialized for Java compile
         for (int y=0; y<image.getHeight(); y++) {
             pixel = image.getRGB(0, y);
             if ((pixel & 0x00FFFFFF) != 0) {
                 percussionPixel = y;
 
                 int claimedVersion = ((pixel & 0x00FF0000) >>> 16);
-                if (claimedVersion == 0x13) { // only supported version
+                if (claimedVersion >= 0x13) {
                     version = claimedVersion;
+                } else {
+                    version = 0x13; // oldest supported version
                 }
                 double tempo = 1 + (((pixel & 0x0000FF00) >> 8) / 240.0);
                 double pixelsPerBeat = pixel & 0x000000FF;
@@ -90,7 +92,7 @@ public class ImageFormat {
                             chord.add(new Note(note + baseNote + transpose,
                                 (pixel & 0x00FF0000) >>> 16,
                                 (pixel & 0x0000C000) >>> 14,
-                                new Timbre.V10(pixel & 0x000000FF),
+                                Timbre.create(version, pixel & 0x000000FF),
                                 new NoteEnvelope((pixel & 0x00000F00) >>> 8)));
                         } else { // chirp
                             int chirpCode = (pixel & 0x00000F00) >>> 8;
@@ -114,13 +116,13 @@ public class ImageFormat {
                                             (pixel & 0x00FF0000) >>> 16,
                                             (pixel & 0x0000C000) >>> 14,
                                             (x - 1) / pixelsPerSecond,
-                                            new Timbre.V10(pixel & 0x000000FF));
+                                            Timbre.create(version, pixel & 0x000000FF));
                                 } else {
                                     chirp = new PartialChirp(actualNote,
                                             (pixel & 0x00FF0000) >>> 16,
                                             (pixel & 0x0000C000) >>> 14,
                                             (x - 1) / pixelsPerSecond,
-                                            new Timbre.V10(pixel & 0x000000FF),
+                                            Timbre.create(version, pixel & 0x000000FF),
                                             chirpCode & 0x7);
                                 }
                                 runningChirps.add(chirp);

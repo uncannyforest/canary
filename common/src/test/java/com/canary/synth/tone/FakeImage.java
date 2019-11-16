@@ -20,6 +20,13 @@ public class FakeImage implements Image {
         return new FakeImage(pixels);
     }
 
+    public static FakeImage createV14() {
+        int[][] pixels = new int[][]
+                {new int[] {0x140001, 0xFF0000, 0x000000},
+                        new int[] {0x000000, 0x000000, 0x000000},
+                        new int[] {0x000000, 0x000000, 0x000000}};
+        return new FakeImage(pixels);
+    }
     /**
      * Places a single note in the Image.  Where testMask is true, uses value specified; otherwise
      * creates default note.

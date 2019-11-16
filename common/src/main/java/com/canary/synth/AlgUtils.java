@@ -21,10 +21,26 @@ public class AlgUtils {
     }
 
     /**
+     * Mod with result always in [0, divisor)
+     */
+    public static double posMod(double dividend, double divisor) {
+        double mod = dividend % divisor;
+        return mod + (mod<0?divisor:0);
+    }
+
+    /**
      * Div with result always rounded in negative direction
      */
     public static int posDiv(int dividend, int divisor) {
         int mod = dividend % divisor;
+        return (dividend/divisor) - (mod<0?1:0);
+    }
+
+    /**
+     * Div with result always rounded in negative direction
+     */
+    public static double posDiv(double dividend, double divisor) {
+        double mod = dividend % divisor;
         return (dividend/divisor) - (mod<0?1:0);
     }
 }
