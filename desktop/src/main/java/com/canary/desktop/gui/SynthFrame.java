@@ -1,28 +1,44 @@
 package com.canary.desktop.gui;
 
+import com.canary.desktop.prc.ImageImpl;
+import com.canary.desktop.snd.AudioUnit;
+import com.canary.desktop.snd.Speaker;
+import com.canary.desktop.snd.SynthInput;
+import com.canary.synth.FormatConverter;
+import com.canary.synth.Synthesizer;
+
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import com.canary.desktop.prc.ImageImpl;
-import com.canary.desktop.snd.AudioUnit;
-import com.canary.desktop.snd.Speaker;
-import com.canary.desktop.snd.SynthInput;
-import com.canary.synth.Synthesizer;
 
 public class SynthFrame extends JFrame {
-    public static final int WINDOW_WIDTH = 800;
-    public static final int WINDOW_HEIGHT = 400;
+    public static final int WINDOW_WIDTH = 900;
+    public static final int WINDOW_HEIGHT = 600;
 
     private int width = 64;
     private int height = 16;
@@ -72,6 +88,10 @@ public class SynthFrame extends JFrame {
 
         // finish set up
         this.setVisible(true);
+    }
+
+    public ImageImpl getSong() {
+        return new ImageImpl(song);
     }
 
     private void addMenu() {
@@ -133,6 +153,7 @@ public class SynthFrame extends JFrame {
 
         gfx.fillRect(x<<zoomExp, y<<zoomExp, 1<<zoomExp, 1<<zoomExp);
         repaint();
+        optionsPanel.update();
     }
 
     public void dropletSquare(int x, int y) {
@@ -180,20 +201,27 @@ public class SynthFrame extends JFrame {
             try {
                 song = ImageIO.read(file);
                 displaySong();
+                process();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this,
-                        "Error saving file",
+                        "Error loading file",
                         "oops!",
                         JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         }
-        process();
     }
 
     public void process() {
         synth = new Synthesizer(new ImageImpl(song));
         input = new SynthInput(synth);
+        optionsPanel.update();
+    }
+
+    public void convert() {
+        FormatConverter.toV14(new ImageImpl(song));
+        displaySong();
+        process();
     }
 
     public void save() {
@@ -207,8 +235,7 @@ public class SynthFrame extends JFrame {
         }
     }
 
-    // display the image stored in song property
-    // this is only necessary when loading a new song
+    // update the display of the image stored in song property
     private void displaySong() {
         width = song.getWidth();
         height = song.getHeight();
@@ -226,6 +253,8 @@ public class SynthFrame extends JFrame {
         icon.setImage(image);
         label.repaint();
         this.validate();
+
+        optionsPanel.update();
     }
 
     private File getOpenFile() {
@@ -246,7 +275,7 @@ public class SynthFrame extends JFrame {
 class OptionsPanel extends JPanel {
     private final SynthFrame frame;
 
-    private final JButton play, reload, update, droplet;
+    private final JButton play, reload, update, convert, droplet;
     private final JLabel lVolume, lPitch, lTimbre;
     private final JSpinner tVolume, tPitch, tTimbre;
 
@@ -285,6 +314,10 @@ class OptionsPanel extends JPanel {
         update = new JButton("Update Audio");
         add(update);
         update.addActionListener((event) ->  frame.process());
+
+        convert = new JButton("Convert to v1.4");
+        add(convert);
+        convert.addActionListener((event) ->  frame.convert());
 
         ///// COLORS
         lVolume = new JLabel("Vol");
@@ -326,6 +359,13 @@ class OptionsPanel extends JPanel {
                 frame.setUsingDroplet(false);
             }
         });
+
+        update();
+    }
+
+    public void update() {
+        boolean canConvert = FormatConverter.canConvertToV14(frame.getSong());
+        convert.setEnabled(canConvert);
     }
 
     public void setColor(int color) {

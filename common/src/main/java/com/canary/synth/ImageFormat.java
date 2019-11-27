@@ -1,9 +1,5 @@
 package com.canary.synth;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-
 import com.canary.io.Image;
 import com.canary.synth.tone.Chirp;
 import com.canary.synth.tone.Noise;
@@ -14,9 +10,28 @@ import com.canary.synth.tone.mod.NoiseEnvelope;
 import com.canary.synth.tone.mod.NoteEnvelope;
 import com.canary.synth.tone.mod.Timbre;
 
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+
 public class ImageFormat {
 
     public static final int[] MAJOR_SCALE = {0, 2, 4, 5, 7, 9, 11};
+
+    public static boolean hasValidFormatColumn(Image image) {
+        int pixel;
+        int numNonBlackInLeftColumn = 0;
+        for (int y=0; y<image.getHeight(); y++) {
+            pixel = image.getRGB(0, y);
+            if ((pixel & 0x00FFFFFF) != 0) {
+                numNonBlackInLeftColumn++;
+                if (numNonBlackInLeftColumn >= 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public static int getYBoundary(Image image) {
         int pixel;
@@ -26,7 +41,7 @@ public class ImageFormat {
                 return y;
             }
         }
-        throw new IllegalArgumentException("Format missing non-black pixels in leftmost row");
+        throw new IllegalArgumentException("Format missing non-black pixels in leftmost column");
     }
 
     public static int getFormatVersion(Image image, int yBoundary) {

@@ -3,6 +3,18 @@ package com.canary.synth;
 import com.canary.io.EditableImage;
 
 public final class FormatConverter {
+    public static boolean canConvertToV14(EditableImage image) {
+        return ImageFormat.hasValidFormatColumn(image)
+                && ImageFormat.getFormatVersion(image) == 0x13;
+    }
+
+    public static void toV14(EditableImage image) {
+        if (!canConvertToV14(image)) {
+            throw new IllegalArgumentException("Format must be 1.3");
+        }
+        v13ToV14(image);
+    }
+
     public static void v13ToV14(EditableImage image) {
         int yBoundary = ImageFormat.getYBoundary(image);
         int formatVersion = ImageFormat.getFormatVersion(image, yBoundary);
@@ -18,5 +30,8 @@ public final class FormatConverter {
                 image.setRGB(x, y, v14Pixel);
             }
         }
+        int oldFormatPixel = image.getRGB(0, yBoundary);
+        int newFormatPixel = (oldFormatPixel & 0x0000FFFF) | (0x14 << 16);
+        image.setRGB(0, yBoundary, newFormatPixel);
     }
 }
