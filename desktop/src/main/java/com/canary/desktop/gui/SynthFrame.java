@@ -21,7 +21,7 @@ import com.canary.desktop.snd.SynthInput;
 import com.canary.synth.Synthesizer;
 
 public class SynthFrame extends JFrame {
-    public static final int WINDOW_WIDTH = 600;
+    public static final int WINDOW_WIDTH = 800;
     public static final int WINDOW_HEIGHT = 400;
 
     private int width = 64;
@@ -31,12 +31,14 @@ public class SynthFrame extends JFrame {
     private File file;
     private BufferedImage song = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     private int color = 0xFF7F7F7F;
+    private boolean usingDroplet = false;
 
     private final JFileChooser chooser;
     private BufferedImage image = new BufferedImage(width<<zoomExp, height<<zoomExp, BufferedImage.TYPE_INT_ARGB);
     private ImageIcon icon = new ImageIcon(image);
     private JLabel label = new JLabel(icon);
     private Graphics2D gfx = (Graphics2D)(image.getGraphics());
+    private OptionsPanel optionsPanel;
 
     private Speaker spkr = new Speaker();
     private Synthesizer synth;
@@ -48,7 +50,8 @@ public class SynthFrame extends JFrame {
 
         // set up panel
         this.getContentPane().add(new JScrollPane(label), BorderLayout.CENTER);
-        this.getContentPane().add(new OptionsPanel(this), BorderLayout.NORTH);
+        optionsPanel = new OptionsPanel(this);
+        this.getContentPane().add(optionsPanel, BorderLayout.NORTH);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setVerticalAlignment(SwingConstants.TOP);
 
@@ -63,9 +66,8 @@ public class SynthFrame extends JFrame {
         setupImage();
         label.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent event) {
-                drawSquare(event.getX()>>zoomExp, event.getY()>>zoomExp);
-            }
-        });
+                touchSquare(event.getX()>>zoomExp, event.getY()>>zoomExp, usingDroplet);
+            }});
         gfx.setColor(new Color(127, 127, 127)); // TODO make default constant
 
         // finish set up
@@ -118,6 +120,14 @@ public class SynthFrame extends JFrame {
         repaint();
     }
 
+    public void touchSquare(int x, int y, boolean usingDroplet) {
+        if (usingDroplet) {
+            dropletSquare(x, y);
+        } else {
+            drawSquare(x, y);
+        }
+    }
+
     public void drawSquare(int x, int y) {
         song.setRGB(x, y, color);
 
@@ -125,12 +135,9 @@ public class SynthFrame extends JFrame {
         repaint();
     }
 
-    public void zoomIn() {
-
-    }
-
-    public void zoomOut() {
-
+    public void dropletSquare(int x, int y) {
+        color = song.getRGB(x, y);
+        optionsPanel.setColor(color);
     }
 
     public void setColor(int r, int g, int b) {
@@ -139,6 +146,14 @@ public class SynthFrame extends JFrame {
                 (r << 16) |
                 (g << 8) |
                 b;
+    }
+
+    public boolean getUsingDroplet() {
+        return this.usingDroplet;
+    }
+
+    public void setUsingDroplet(boolean usingDroplet) {
+        this.usingDroplet = usingDroplet;
     }
 
     public void displayBufferedImage(BufferedImage image) {
@@ -231,8 +246,7 @@ public class SynthFrame extends JFrame {
 class OptionsPanel extends JPanel {
     private final SynthFrame frame;
 
-//    private final JButton zoomIn, zoomOut;
-    private final JButton play, reload, update;
+    private final JButton play, reload, update, droplet;
     private final JLabel lVolume, lPitch, lTimbre;
     private final JSpinner tVolume, tPitch, tTimbre;
 
@@ -252,60 +266,25 @@ class OptionsPanel extends JPanel {
         ///// BUTTONS
         play = new JButton("Play");
         add(play);
-        play.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if (!playing) {
-                    frame.play();
-                    play.setText("Stop");
-                    playing = true;
-                } else {
-                    frame.stop();
-                    play.setText("Play");
-                    playing = false;
-                }
+        play.addActionListener((event) ->  {
+            if (!playing) {
+                frame.play();
+                play.setText("Stop");
+                playing = true;
+            } else {
+                frame.stop();
+                play.setText("Play");
+                playing = false;
             }
         });
 
         reload = new JButton("Reload");
         add(reload);
-        reload.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                frame.load();
-            }
-        });
+        reload.addActionListener((event) -> frame.load());
 
         update = new JButton("Update Audio");
         add(update);
-        update.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                frame.process();
-            }
-        });
-
-        /*
-        ///// ZOOM
-        zoomIn = new JButton("Zoom In");
-        zoomOut = new JButton("Zoom Out");
-        // hZoomIn = new JButton("> <"); // TODO
-        // hZoomOut = new JButton("< >");
-
-        add(zoomIn);
-        add(zoomOut);
-        // add(hZoomIn);
-        // add(hZoomOut);
-
-        zoomIn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                parent.zoomIn();
-            }
-        });
-
-        zoomOut.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                parent.zoomOut();
-            }
-        });
-        */
+        update.addActionListener((event) ->  frame.process());
 
         ///// COLORS
         lVolume = new JLabel("Vol");
@@ -323,23 +302,35 @@ class OptionsPanel extends JPanel {
         add(lTimbre);
         add(tTimbre);
 
-        tVolume.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                volume = ((SpinnerNumberModel)tVolume.getModel()).getNumber().intValue();
-                frame.setColor(volume, pitch, timbre);
+        tVolume.addChangeListener((ChangeEvent e) -> {
+            volume = ((SpinnerNumberModel)tVolume.getModel()).getNumber().intValue();
+            frame.setColor(volume, pitch, timbre);
+        });
+        tPitch.addChangeListener((ChangeEvent e) -> {
+            pitch = ((SpinnerNumberModel)tPitch.getModel()).getNumber().intValue();
+            frame.setColor(volume, pitch, timbre);
+        });
+        tTimbre.addChangeListener((ChangeEvent e) -> {
+            timbre = ((SpinnerNumberModel)tTimbre.getModel()).getNumber().intValue();
+            frame.setColor(volume, pitch, timbre);
+        });
+
+        droplet = new JButton("Pen");
+        add(droplet);
+        droplet.addActionListener((ActionEvent event) -> {
+            if (!frame.getUsingDroplet()) {
+                droplet.setText("Droplet");
+                frame.setUsingDroplet(true);
+            } else {
+                droplet.setText("Pen");
+                frame.setUsingDroplet(false);
             }
         });
-        tPitch.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                pitch = ((SpinnerNumberModel)tPitch.getModel()).getNumber().intValue();
-                frame.setColor(volume, pitch, timbre);
-            }
-        });
-        tTimbre.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                timbre = ((SpinnerNumberModel)tTimbre.getModel()).getNumber().intValue();
-                frame.setColor(volume, pitch, timbre);
-            }
-        });
+    }
+
+    public void setColor(int color) {
+        tVolume.setValue((color & 0x00FF0000) >> 16);
+        tPitch.setValue((color & 0x0000FF00) >> 8);
+        tTimbre.setValue(color & 0x000000FF);
     }
 }
