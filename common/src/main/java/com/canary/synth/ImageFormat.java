@@ -18,7 +18,27 @@ public class ImageFormat {
 
     public static final int[] MAJOR_SCALE = {0, 2, 4, 5, 7, 9, 11};
 
-	public static Score load(Image image) {
+    public static int getYBoundary(Image image) {
+        int pixel;
+        for (int y=0; y<image.getHeight(); y++) {
+            pixel = image.getRGB(0, y);
+            if ((pixel & 0x00FFFFFF) != 0) {
+                return y;
+            }
+        }
+        throw new IllegalArgumentException("Format missing non-black pixels in leftmost row");
+    }
+
+    public static int getFormatVersion(Image image, int yBoundary) {
+        int pixel = image.getRGB(0, yBoundary);
+        return ((pixel & 0x00FF0000) >>> 16);
+    }
+
+    public static int getFormatVersion(Image image) {
+        return getFormatVersion(image, getYBoundary(image));
+    }
+
+    public static Score load(Image image) {
         Deque<Chirp> runningChirps;
 
         // Why not 0?
@@ -31,28 +51,22 @@ public class ImageFormat {
         // find end of percussion section
         // determines total volume and tempo
         int pixel;
-        int percussionPixel = 0;
+        int percussionPixel = getYBoundary(image);
         double volume = 255;
         double pixelsPerSecond = 8;
         int version = 0x14; // (latest version) - must be initialized for Java compile
-        for (int y=0; y<image.getHeight(); y++) {
-            pixel = image.getRGB(0, y);
-            if ((pixel & 0x00FFFFFF) != 0) {
-                percussionPixel = y;
 
-                int claimedVersion = ((pixel & 0x00FF0000) >>> 16);
-                if (claimedVersion >= 0x13) {
-                    version = claimedVersion;
-                } else {
-                    version = 0x13; // oldest supported version
-                }
-                double tempo = 1 + (((pixel & 0x0000FF00) >> 8) / 240.0);
-                double pixelsPerBeat = pixel & 0x000000FF;
-                pixelsPerSecond = tempo * pixelsPerBeat;
-
-                break;
-            }
+        // Process first format pixel
+        pixel = image.getRGB(0, percussionPixel);
+        int claimedVersion = ((pixel & 0x00FF0000) >>> 16);
+        if (claimedVersion >= 0x13) {
+            version = claimedVersion;
+        } else {
+            version = 0x13; // oldest supported version
         }
+        double tempo = 1 + (((pixel & 0x0000FF00) >> 8) / 240.0);
+        double pixelsPerBeat = pixel & 0x000000FF;
+        pixelsPerSecond = tempo * pixelsPerBeat;
 
         // find base note, indicated in image by highest non-black pixel on left edge
         // (this pixel is not an audible note - audible notes start at x=1)

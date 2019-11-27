@@ -2,9 +2,9 @@ package com.canary.desktop.prc;
 
 import java.awt.image.BufferedImage;
 
-import com.canary.io.Image;
+import com.canary.io.EditableImage;
 
-public class ImageImpl implements Image {
+public class ImageImpl implements EditableImage {
 
     private BufferedImage img;
 
@@ -25,5 +25,10 @@ public class ImageImpl implements Image {
     @Override
     public int getRGB(int x, int y) {
         return img.getRGB(x, y);
+    }
+
+    @Override
+    public void setRGB(int x, int y, int value) {
+        img.setRGB(x, y, value);
     }
 }

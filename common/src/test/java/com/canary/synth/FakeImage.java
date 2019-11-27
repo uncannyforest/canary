@@ -1,9 +1,12 @@
-package com.canary.synth.tone;
+package com.canary.synth;
 
-import com.canary.io.Image;
+import com.canary.io.EditableImage;
 
-public class FakeImage implements Image {
+import java.util.Arrays;
+
+public class FakeImage implements EditableImage {
     private static final int DEFAULT_NOTE = 0xFF8000;
+    private static final int DEFAULT_NOISE = 0xFFFFFF;
 
     // [x][y] (note Java literal representation is transposed)
     private int[][] pixels;
@@ -45,6 +48,23 @@ public class FakeImage implements Image {
         return this;
     }
 
+    /**
+     * Places a single percussion noise in the Image.  Where testMask is true, uses value specified;
+     * otherwise creates default noise.
+     */
+    public FakeImage withNoiseWithCharacteristics(int testMask, int value, int xPos, int yPos) {
+        pixels[xPos][yPos] = (DEFAULT_NOISE & ~testMask) | (value & testMask);
+        return this;
+    }
+
+    public FakeImage copy() {
+        int[][] newPixels = new int[pixels.length][];
+        for (int x = 0; x < pixels.length; x++) {
+            newPixels[x] = Arrays.copyOf(pixels[x], pixels[x].length);
+        }
+        return new FakeImage(newPixels);
+    }
+
     @Override
     public int getWidth() {
         return pixels.length;
@@ -58,5 +78,10 @@ public class FakeImage implements Image {
     @Override
     public int getRGB(int x, int y) {
         return pixels[x][y];
+    }
+
+    @Override
+    public void setRGB(int x, int y, int value) {
+        pixels[x][y] = value;
     }
 }

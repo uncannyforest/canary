@@ -1,5 +1,6 @@
 package com.canary.synth.tone;
 
+import com.canary.synth.FakeImage;
 import com.canary.synth.ImageFormat;
 import com.canary.synth.Score;
 
