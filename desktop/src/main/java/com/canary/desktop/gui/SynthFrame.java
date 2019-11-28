@@ -4,6 +4,7 @@ import com.canary.desktop.prc.ImageImpl;
 import com.canary.desktop.snd.AudioUnit;
 import com.canary.desktop.snd.Speaker;
 import com.canary.desktop.snd.SynthInput;
+import com.canary.io.WavWriter;
 import com.canary.synth.FormatConverter;
 import com.canary.synth.Synthesizer;
 
@@ -12,7 +13,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -35,6 +35,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
+
+import uk.co.labbookpages.WavFileException;
 
 public class SynthFrame extends JFrame {
     public static final int WINDOW_WIDTH = 900;
@@ -84,7 +86,7 @@ public class SynthFrame extends JFrame {
             public void mousePressed(MouseEvent event) {
                 touchSquare(event.getX()>>zoomExp, event.getY()>>zoomExp, usingDroplet);
             }});
-        gfx.setColor(new Color(127, 127, 127)); // TODO make default constant
+        gfx.setColor(new Color(127, 127, 127));
 
         // finish set up
         this.setVisible(true);
@@ -99,28 +101,20 @@ public class SynthFrame extends JFrame {
 
         JMenu fileMenu = new JMenu("File");
 
-        menuItem= new JMenuItem("Open PNG");
-        menuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                open();
-            }
-        });
+        menuItem = new JMenuItem("Open PNG");
+        menuItem.addActionListener((event) -> open());
         fileMenu.add(menuItem);
 
-        menuItem= new JMenuItem("Save as PNG");
-        menuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                save();
-            }
-        });
+        menuItem = new JMenuItem("Save as PNG");
+        menuItem.addActionListener((event) -> save());
+        fileMenu.add(menuItem);
+
+        menuItem = new JMenuItem("Export to WAV");
+        menuItem.addActionListener((event) -> export());
         fileMenu.add(menuItem);
 
         menuItem= new JMenuItem("Exit");
-        menuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                System.exit(0);
-            }
-        });
+        menuItem.addActionListener((event) -> System.exit(0));
         fileMenu.add(menuItem);
 
         JMenuBar menuBar = new JMenuBar();
@@ -231,6 +225,25 @@ public class SynthFrame extends JFrame {
             JOptionPane.showMessageDialog(this,
                     "Error saving file",
                     "oops!",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void export() {
+        // make sure we've updated first
+        synth = new Synthesizer(new ImageImpl(song));
+
+        try {
+            WavWriter.write(new WavWriter.Data(getSaveFile(), 48000, 16, synth));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error saving file",
+                    e.toString(),
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (WavFileException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error saving file",
+                    e.toString(),
                     JOptionPane.ERROR_MESSAGE);
         }
     }

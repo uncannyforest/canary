@@ -24,7 +24,7 @@ import com.canary.R;
 import com.canary.android.PlayManager;
 import com.canary.android.prc.ImageImpl;
 import com.canary.android.prc.WavWriterTask;
-import com.canary.io.WavWriterData;
+import com.canary.io.WavWriter;
 import com.canary.synth.Synthesizer;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -220,7 +220,7 @@ public class PlayActivity extends AppCompatActivity {
         progressBar.setProgress(0);
         try {
             File file = getExportFile();
-            WavWriterData wavWriterData = new WavWriterData(file, 48000, 16, playManager.getSource());
+            WavWriter.Data wavWriterData = new WavWriter.Data(file, 48000, 16, playManager.getSource());
             new WavWriterTask(progressBar, PlayActivity.this).execute(wavWriterData);
         } catch (IOException e) {
             e.printStackTrace();
@@ -309,6 +309,7 @@ public class PlayActivity extends AppCompatActivity {
         alert("Error", error);
     }
 
+    // TODO: fix, this doesn't work
     private File getExportFile() throws IOException {
         File dir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_MUSIC), "Canary");
