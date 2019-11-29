@@ -26,12 +26,12 @@ public final class FormatConverter {
                 int v13Pixel = image.getRGB(x, y);
                 int v13Timbre = v13Pixel & 0x000000FF;
                 int v14Timbre = (v13Timbre + 1) / 2; // add one so as to round up
-                int v14Pixel = (v13Pixel &  0x00FFFF00) | v14Timbre;
+                int v14Pixel = (v13Pixel &  0xFFFFFF00) | v14Timbre;
                 image.setRGB(x, y, v14Pixel);
             }
         }
         int oldFormatPixel = image.getRGB(0, yBoundary);
-        int newFormatPixel = (oldFormatPixel & 0x0000FFFF) | (0x14 << 16);
+        int newFormatPixel = (oldFormatPixel & 0xFF00FFFF) | (0x14 << 16);
         image.setRGB(0, yBoundary, newFormatPixel);
     }
 }
